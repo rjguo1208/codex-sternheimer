@@ -43,10 +43,11 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-20 15:13:35 EDT</span>
+        <span class="pill">Generated: 2026-05-20 16:13:42 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
+        <span class="pill">image MPI validated</span>
       </div>
     </div>
   </header>
@@ -108,6 +109,25 @@
     </section>
 
     <section>
+      <h2>Image-MPI Production Path</h2>
+      <p>The k-resolved driver now supports QE image-level task parallelism. Each image keeps a complete 12x12 k-grid and its own QE <code>h_psi</code> communicator. Rest k points are distributed by <code>MOD(irk-1,nimage) == my_image_id</code>, and the partial <code>delta_T^P</code> blocks are reduced over <code>inter_image_comm</code>.</p>
+      <figure>
+        <img src="../assets/kresolved_sternheimer_mpi_validation.png" alt="Image-MPI validation plot">
+        <figcaption>Two-image validation for the 4-rest-k smoke. The Rest correction norms overlap the one-image reference to machine precision; the wall time drops from 275.6 s to 203.2 s for this small test.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Run</th><th>Images</th><th>Wall time</th><th>max <code>|diff|</code> in summary norms vs 1 image</th><th>max relative residual</th></tr></thead>
+          <tbody>
+            <tr><td>reference 4-k smoke</td><td>1</td><td>275.61 s</td><td>0</td><td>9.95966013e-11</td></tr>
+            <tr><td>image-MPI 4-k smoke</td><td>2</td><td>203.25 s</td><td>8.88e-16 Ry</td><td>9.95967967e-11</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This production route is intended for full <code>rest ik=1..144</code> runs using <code>-ni NIMAGE -nk 1</code>. It deliberately avoids QE k-pool splitting because cross-k matrix elements require arbitrary initial, Rest, and final k wavefunctions in the same image.</p>
+    </section>
+
+    <section>
       <h2>Interpretation</h2>
       <p>The q=0 result verifies that the k-resolved driver reduces to the already validated single-k Sternheimer path. The 4-k smoke then exercises the new cross-k local folding and NC nonlocal projector-difference action.</p>
       <p>The Rest-space correction is noticeably k-dependent, ranging from about <code>6.52e-2</code> to <code>1.01e-1 Ry</code> over the selected final k points. This is still a small selected-k smoke, not a converged 12x12 Rest-space calculation.</p>
@@ -125,6 +145,11 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
 
 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal.in</pre>
+      <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -ni 2 -nk 1 \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal_images.in
+
+sbatch qe_sternheimer/run_kresolved_sternheimer_ik1_full_144_images.sh</pre>
       <p class="small">Published outputs are reduced CSV summaries, one plot, and the generated report. Raw wavefunctions, cube grids, binary tensors, and scheduler logs remain excluded.</p>
     </section>
 
