@@ -43,11 +43,12 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-20 16:13:42 EDT</span>
+        <span class="pill">Generated: 2026-05-20 19:01:37 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
         <span class="pill">image MPI validated</span>
+        <span class="pill">full 12x12 production complete</span>
       </div>
     </div>
   </header>
@@ -128,6 +129,36 @@
     </section>
 
     <section>
+      <h2>Full 12x12 Production Result</h2>
+      <p>The full selected-initial-k production run completed for <code>initial ik=1</code>, <code>rest ik=1..144</code>, and <code>final ik=1..144</code> using 72 images on one highmem node.</p>
+      <div class="grid">
+        <div class="card"><strong>Wall time</strong><span>2h27m17s Slurm elapsed; QE reported 2h26m wall.</span></div>
+        <div class="card"><strong>RHS solves</strong><span>1584 total; all converged.</span></div>
+        <div class="card"><strong>Residual</strong><span>max relative residual <code>9.97858095e-11</code>.</span></div>
+        <div class="card"><strong>Largest correction</strong><span><code>max ||delta T^P_AA||_F = 3.81532094 Ry</code> at final <code>ik=1</code>.</span></div>
+      </div>
+      <figure>
+        <img src="../assets/kresolved_sternheimer_ik1_full144_norms.png" alt="Full 144 final k Sternheimer norms">
+        <figcaption>Frobenius norms of bare <code>g_AA</code>, second-order Rest correction <code>delta T^P_AA</code>, and resulting <code>T^P_AA</code> over all 144 final k points.</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/kresolved_sternheimer_ik1_full144_kmap.png" alt="Full 144 final k Sternheimer k map">
+        <figcaption>Same quantities shown on QE Cartesian final-k coordinates. The star marks the initial Gamma point <code>ik=1</code>.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>min</th><th>max</th><th>mean</th></tr></thead>
+          <tbody>
+            <tr><td><code>||g_AA(kf,ki)||_F</code></td><td>0.95237705 Ry at final ik 143</td><td>4.41154985 Ry at final ik 2</td><td>1.83886164 Ry</td></tr>
+            <tr><td><code>||delta T^P_AA(kf,ki)||_F</code></td><td>0.44669808 Ry at final ik 119</td><td>3.81532094 Ry at final ik 1</td><td>1.90255231 Ry</td></tr>
+            <tr><td><code>||T^P_AA(kf,ki)||_F</code></td><td>1.01131893 Ry at final ik 93</td><td>2.68429785 Ry at final ik 13</td><td>1.80786869 Ry</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This is still the second-order Rest-space result <code>g_AR G_R g_RA</code>. It does not yet include Rest-Rest multiple scattering through <code>[1 - g_RR G_R]^{-1}</code> or active-space dynamic resummation.</p>
+    </section>
+
+    <section>
       <h2>Interpretation</h2>
       <p>The q=0 result verifies that the k-resolved driver reduces to the already validated single-k Sternheimer path. The 4-k smoke then exercises the new cross-k local folding and NC nonlocal projector-difference action.</p>
       <p>The Rest-space correction is noticeably k-dependent, ranging from about <code>6.52e-2</code> to <code>1.01e-1 Ry</code> over the selected final k points. This is still a small selected-k smoke, not a converged 12x12 Rest-space calculation.</p>
@@ -150,6 +181,10 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal_images.in
 
 sbatch qe_sternheimer/run_kresolved_sternheimer_ik1_full_144_images.sh</pre>
+      <pre>phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_report.md
+phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_pair_summary.csv
+phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_rhs.csv
+phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_matrix.csv</pre>
       <p class="small">Published outputs are reduced CSV summaries, one plot, and the generated report. Raw wavefunctions, cube grids, binary tensors, and scheduler logs remain excluded.</p>
     </section>
 
