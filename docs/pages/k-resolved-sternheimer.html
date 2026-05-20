@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>K-resolved Sternheimer Smoke</title>
+  <style>
+    :root { --bg:#f7f8fb; --panel:#ffffff; --ink:#1f2937; --muted:#667085; --line:#d9dee8; --accent:#22577a; --accent2:#9f2f42; --code:#111827; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; }
+    header { background:#17324d; color:#fff; padding:30px 18px; }
+    .wrap { max-width:1080px; margin:0 auto; }
+    h1 { margin:0 0 8px; font-size:clamp(1.7rem, 4vw, 2.7rem); line-height:1.1; letter-spacing:0; }
+    h2 { margin:0 0 12px; font-size:1.25rem; }
+    p { margin:8px 0 12px; }
+    a { color:#22577a; }
+    main { max-width:1080px; margin:0 auto; padding:22px 16px 46px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; margin:16px 0; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .pill { border:1px solid rgba(255,255,255,.36); border-radius:999px; padding:5px 9px; color:#e8eef6; font-size:.88rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
+    .card { border:1px solid var(--line); border-radius:8px; background:#fbfcfe; padding:12px; }
+    .card strong { display:block; color:var(--accent); margin-bottom:4px; }
+    .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; margin:12px 0; }
+    table { border-collapse:collapse; width:100%; min-width:620px; background:#fff; font-size:.92rem; }
+    th, td { border-bottom:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top; }
+    th { background:#eef3f7; color:#253447; }
+    tr:last-child td { border-bottom:0; }
+    figure { margin:0; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#fff; }
+    img { display:block; max-width:100%; height:auto; }
+    figcaption { padding:10px 12px; color:var(--muted); font-size:.9rem; border-top:1px solid var(--line); }
+    code, pre { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    pre { background:var(--code); color:#dbeafe; padding:12px; border-radius:8px; overflow:auto; font-size:.86rem; }
+    .note { border-color:#bfdbfe; background:#eff6ff; }
+    .warning { border-color:#fed7aa; background:#fff7ed; }
+    .small { color:var(--muted); font-size:.9rem; }
+    @media (max-width:720px) { section { padding:14px; } table { min-width:560px; font-size:.84rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
+      <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
+      <div class="meta">
+        <span class="pill">Generated: 2026-05-20 15:13:35 EDT</span>
+        <span class="pill">initial ik = 1</span>
+        <span class="pill">rest ik = 1..4</span>
+        <span class="pill">final ik = 1..4</span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <p><a href="../index.html">Back to main report</a></p>
+
+    <section>
+      <h2>Purpose</h2>
+      <p>This is the first k-resolved Sternheimer smoke after the single-k QE-Hamiltonian validation. For a fixed active initial state at <code>ik=1</code>, the code solves Rest-space Sternheimer equations at selected Rest k points and projects the response into selected final active k points.</p>
+      <p>The calculation is second order in the Rest-space scattering path. It does not yet solve the fully coupled Rest-rest inverse across all k points.</p>
+    </section>
+
+    <section>
+      <h2>Inputs And Runtime</h2>
+      <div class="grid">
+        <div class="card"><strong>Active bands</strong><span>7-17</span></div>
+        <div class="card"><strong>Reference energy</strong><span>omega0 = -0.4363258377180024 Ry</span></div>
+        <div class="card"><strong>Broadening</strong><span>eta = 7.349864435132889e-4 Ry</span></div>
+        <div class="card"><strong>k weight</strong><span>1/144</span></div>
+        <div class="card"><strong>Potential</strong><span>real DeltaV local cube plus NC nonlocal projector difference</span></div>
+        <div class="card"><strong>Wall time</strong><span>4m35.61s on 1 MPI rank</span></div>
+      </div>
+    </section>
+
+    <section class="note">
+      <h2>q=0 Validation</h2>
+      <p>The <code>ik=1, rest=1, final=1</code> limit reproduces the previously validated single-k QE-Hamiltonian Sternheimer calculation.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>k-resolved q=0 smoke</th><th>single-k phase7 reference</th></tr></thead>
+          <tbody>
+            <tr><td><code>||g_AA||_F</code></td><td>3.028765182765 Ry</td><td>3.02876518 Ry</td></tr>
+            <tr><td><code>||delta_T^P||_F</code></td><td>9.22018407494e-3 Ry</td><td>9.22018407e-3 Ry</td></tr>
+            <tr><td>max relative GMRES residual</td><td>9.74176233e-11</td><td>9.74176116e-11</td></tr>
+            <tr><td>max GMRES iterations</td><td>36</td><td>36</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>4-k Smoke Results</h2>
+      <figure>
+        <img src="../assets/kresolved_sternheimer_ik1_rest1_4_final1_4_norms.png" alt="K-resolved Sternheimer norm plot">
+        <figcaption>Final-k dependence of bare active matrix norm, partially scattered active matrix norm, and Rest-space correction norm for <code>initial ik=1</code> and <code>rest ik=1..4</code>.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>initial ik</th><th>final ik</th><th><code>||g_AA||_F</code> (Ry)</th><th><code>||delta_T^P||_F</code> (Ry)</th><th><code>||T^P_AA||_F</code> (Ry)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>3.028765182765</td><td>1.013833998709e-1</td><td>2.931626493062</td></tr>
+            <tr><td>1</td><td>2</td><td>4.411549849075</td><td>7.158745432577e-2</td><td>4.346075545636</td></tr>
+            <tr><td>1</td><td>3</td><td>2.725489755487</td><td>8.835903870799e-2</td><td>2.642811623624</td></tr>
+            <tr><td>1</td><td>4</td><td>3.888508105418</td><td>6.519892372470e-2</td><td>3.830636837759</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>All 44 RHS solves converged. The maximum relative residual is <code>9.95966013e-11</code>, and the maximum GMRES iteration count is 40.</p>
+    </section>
+
+    <section>
+      <h2>Interpretation</h2>
+      <p>The q=0 result verifies that the k-resolved driver reduces to the already validated single-k Sternheimer path. The 4-k smoke then exercises the new cross-k local folding and NC nonlocal projector-difference action.</p>
+      <p>The Rest-space correction is noticeably k-dependent, ranging from about <code>6.52e-2</code> to <code>1.01e-1 Ry</code> over the selected final k points. This is still a small selected-k smoke, not a converged 12x12 Rest-space calculation.</p>
+    </section>
+
+    <section>
+      <h2>Reproducibility</h2>
+      <pre>module reset
+module load aocc/3.1.0 openmpi/4.1.6
+module load amdblis/3.0 amdlibflame/3.0 amdlibm/3.0 fftw
+make -C qe_sternheimer qe_kresolved_sternheimer_smoke.x
+
+qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal.in
+
+qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal.in</pre>
+      <p class="small">Published outputs are reduced CSV summaries, one plot, and the generated report. Raw wavefunctions, cube grids, binary tensors, and scheduler logs remain excluded.</p>
+    </section>
+
+    <section class="warning">
+      <h2>Not Published</h2>
+      <p>The full run directory contains raw QE wavefunctions, large cube data, generated executables, binary tensors, and run logs. Those files are intentionally not copied into <code>docs/</code> and are excluded from the GitHub Pages commit.</p>
+    </section>
+  </main>
+</body>
+</html>
