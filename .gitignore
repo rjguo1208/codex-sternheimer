@@ -1,0 +1,46 @@
+# Keep the GitHub Pages artifact, but ignore raw HPC outputs.
+!docs/
+!docs/**
+
+# Large numerical arrays and wavefunction data
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.dat
+*.wfc
+*.wfc*
+*.bin
+*.cube
+*.save/
+*.x
+*.o
+*.mod
+
+# Runtime, logs, temporary files
+*.tmp
+*.bak
+*.log
+*.out
+*.err
+__pycache__/
+.DS_Store
+
+# Local or sensitive configuration / credentials
+.env
+*.key
+*.pem
+id_rsa*
+id_ed25519*
+.claude/
+
+# Raw result directories are summarized in docs/index.html instead of tracked.
+primitive_highbands_12x12/
+phase0_audit/
+phase0_audit_150/
+phase1_*/
+phase2_*/
+phase7_*/
+figures/
+configs/
+qe_sternheimer/
