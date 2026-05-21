@@ -43,13 +43,14 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-21 14:35 EDT</span>
+        <span class="pill">Generated: 2026-05-21 16:08 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
         <span class="pill">image MPI validated</span>
         <span class="pill">full 12x12 production complete</span>
         <span class="pill">full-order prototype validated</span>
+        <span class="pill">Xi persistence validated</span>
       </div>
     </div>
   </header>
@@ -117,6 +118,33 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
           </tbody>
         </table>
       </div>
+    </section>
+
+    <section class="note">
+      <h2>Full-Order Xi Response Persistence</h2>
+      <p>The driver can now save the full-order Rest-space response <code>Xi_j(k_r;k_i)</code> after GMRES and read it back to reproduce the active-space contraction. The saved object is the intended handoff to Wannier-function perturbation.</p>
+      <pre>Xi_j(k_r;k_i) = [Q_R(omega0+i eta - H_QE)Q_R - Q_R g_RR Q_R]^-1 Q_R g(k_r,k_i)|a_j,k_i&gt;</pre>
+      <figure>
+        <img src="../assets/kresolved_response_persistence_validation_nrest1_2.png" alt="Full-order Xi response persistence validation">
+        <figcaption>Save/reload validation for <code>initial ik=1</code>, <code>rest ik=1..2</code>, <code>final ik=1..2</code>. Reloaded <code>Xi</code> reproduces the direct in-memory <code>Delta T^P_AA</code> contraction exactly for this run.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Saved <code>Xi</code> blocks</td><td>22</td></tr>
+            <tr><td>Saved RHS blocks</td><td>22</td></tr>
+            <tr><td>Metadata rows</td><td>22</td></tr>
+            <tr><td>Logical file size</td><td>16.3 MB; filesystem usage about 23 MB</td></tr>
+            <tr><td>max <code>P_A Xi</code> leakage</td><td>2.58622560e-16</td></tr>
+            <tr><td>max relative residual</td><td>7.56336564e-11</td></tr>
+            <tr><td>max GMRES iterations</td><td>51</td></tr>
+            <tr><td>reload diff, final ik=1</td><td>0.0 Ry</td></tr>
+            <tr><td>reload diff, final ik=2</td><td>0.0 Ry</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The binary response directory is intentionally not published to GitHub Pages. Only the reduced figure and summary diagnostics are included here.</p>
     </section>
 
     <section>
@@ -211,6 +239,8 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
 
 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse.in</pre>
+      <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse_save_response.in</pre>
       <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -ni 2 -nk 1 \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal_images.in
