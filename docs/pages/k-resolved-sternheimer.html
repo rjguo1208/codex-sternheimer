@@ -43,12 +43,13 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-20 19:01:37 EDT</span>
+        <span class="pill">Generated: 2026-05-21 14:35 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
         <span class="pill">image MPI validated</span>
         <span class="pill">full 12x12 production complete</span>
+        <span class="pill">full-order prototype validated</span>
       </div>
     </div>
   </header>
@@ -58,7 +59,36 @@
     <section>
       <h2>Purpose</h2>
       <p>This is the first k-resolved Sternheimer smoke after the single-k QE-Hamiltonian validation. For a fixed active initial state at <code>ik=1</code>, the code solves Rest-space Sternheimer equations at selected Rest k points and projects the response into selected final active k points.</p>
-      <p>The calculation is second order in the Rest-space scattering path. It does not yet solve the fully coupled Rest-rest inverse across all k points.</p>
+      <p>The production 12x12 result on this page is still the second-order Rest-space scattering path. A new small-subspace full-order mode has now been added and validated for selected Rest k points.</p>
+    </section>
+
+    <section class="note">
+      <h2>Full-Order Rest Inverse Prototype</h2>
+      <p>The k-resolved Sternheimer driver now supports <code>mode_in = 'coupled_full_inverse'</code>. In this mode the selected Rest-k blocks are solved as one block GMRES problem with the Rest-Rest coupling term included in the matrix action:</p>
+      <pre>sum_k' Q_R(k) { [omega0 + i eta - H_QE(k)] delta_kk' - w_k' g(k,k') } Q_R(k') Xi_j(k';k_i)
+  = Q_R(k) g(k,k_i) |a_j,k_i&gt;</pre>
+      <p>The corresponding partially scattered active-space block is evaluated as:</p>
+      <pre>Delta T^P_AA(k_f,k_i) = sum_k w_k &lt;a_i,k_f| g(k_f,k) |Xi_j(k;k_i)&gt;
+T^P_AA = g_AA + Delta T^P_AA</pre>
+      <figure>
+        <img src="../assets/kresolved_full_order_validation_nrest1_2.png" alt="K-resolved full-order Sternheimer validation">
+        <figcaption>Validation of the new full-order Rest inverse path. For <code>nrest=1</code>, the k-resolved coupled inverse reproduces the old single-k full inverse to machine precision. For <code>rest ik=1..2</code>, Rest-Rest resummation changes the second-order correction by about 2 percent in this small subset.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Case</th><th><code>||Delta T^P_AA||_F</code> (Ry)</th><th>Diagnostic</th></tr></thead>
+          <tbody>
+            <tr><td>single-k full inverse, <code>ik=1</code></td><td>9.139886721109e-3</td><td>previous phase7 reference</td></tr>
+            <tr><td>k-resolved local full inverse, <code>nrest=1</code></td><td>9.139886721109e-3</td><td>same-k full inverse inside k-resolved driver</td></tr>
+            <tr><td>k-resolved coupled full inverse, <code>nrest=1</code></td><td>9.139886721109e-3</td><td>block GMRES degenerates to single-k full inverse</td></tr>
+            <tr><td><code>local_full - coupled_full</code>, <code>nrest=1</code></td><td>3.11e-17</td><td>Frobenius norm of matrix difference</td></tr>
+            <tr><td>second order, <code>rest ik=1..2</code></td><td>5.703513505852e-2</td><td>independent Rest-k equations</td></tr>
+            <tr><td>coupled full inverse, <code>rest ik=1..2</code></td><td>5.584606498015e-2</td><td>includes <code>g_RR</code> multiple scattering inside selected Rest subset</td></tr>
+            <tr><td><code>second_order - coupled_full</code>, <code>rest ik=1..2</code></td><td>1.269788893891e-3</td><td>Frobenius norm of matrix difference</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The <code>rest ik=1..2</code> full-order run converged with maximum relative residual <code>7.56336231e-11</code> and maximum GMRES iteration count 51. Wall time was 36m38s on one highmem rank; this confirms the implementation but also shows that the current prototype scales roughly as <code>N_rest^2</code> in the matrix action.</p>
     </section>
 
     <section>
@@ -176,6 +206,11 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
 
 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal.in</pre>
+      <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal_coupled_full_inverse.in
+
+qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse.in</pre>
       <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -ni 2 -nk 1 \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal_images.in
