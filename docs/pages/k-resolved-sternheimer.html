@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-21 16:08 EDT</span>
+        <span class="pill">Generated: 2026-05-23 00:36 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -52,6 +52,7 @@
         <span class="pill">full-order prototype validated</span>
         <span class="pill">Xi persistence validated</span>
         <span class="pill">EDI filukk gauge check</span>
+        <span class="pill">standalone W90 npool=4</span>
       </div>
     </div>
   </header>
@@ -173,6 +174,30 @@ M^W(k_f,k_i) = U^\dagger(k_f) M^B(k_f,k_i) U(k_i)</pre>
       <p>The Fortran executable has been updated with <code>use_wannier_gauge</code> and <code>filukk_file</code> namelist flags and writes Wannier-gauge matrix, pair-summary, unitarity, and metadata CSV files. The QE-linked Slurm smoke completed in 46.4 s wall time with <code>max |U^\dagger U-I| = 5.728751e-13</code> and maximum Bloch/Wannier Frobenius norm difference <code>2.104983e-13 Ry</code>.</p>
     </section>
 
+    <section class="note">
+      <h2>Standalone EDI-Style Wannier90 MPI</h2>
+      <p>Wannierization is now split into a dedicated executable, <code>qe_edi_wannierize.x</code>. Its internal path is the same EDI sequence: <code>write_winfil_edi</code>, <code>setup_nnkp</code>, <code>ylm_expansion</code>, <code>compute_amn_para</code>, <code>compute_mmn_para</code>, <code>write_band</code>, and <code>run_wannier</code>/<code>write_filukk</code>. The Sternheimer executable no longer runs Wannier90; it consumes the generated <code>filukk</code>.</p>
+      <figure>
+        <img src="../assets/edi_wannier90_parallel_validation.png" alt="Standalone EDI-style Wannier90 MPI validation">
+        <figcaption>The standalone W90 driver completed with <code>npool=1</code> in 15m08s and with <code>npool=4</code> in 4m16s. The 4-pool MMN stage exercised cross-pool WFC reads, including <code>pool 2 local k 1 -&gt; global k 37</code>. A highmem Sternheimer consumer smoke read the 4-pool <code>filukk</code> with <code>max |U^dag U-I| = 8.59e-14</code> and Bloch/Wannier norm difference <code>1.11e-13 Ry</code>.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Standalone W90 executable</td><td><code>qe_sternheimer/qe_edi_wannierize.x</code></td></tr>
+            <tr><td>W90 output path, <code>npool=1</code></td><td><code>phase8_kresolved_sternheimer/standalone_wannier90/filukk</code></td></tr>
+            <tr><td>W90 output path, <code>npool=4</code></td><td><code>phase8_kresolved_sternheimer/standalone_wannier90_np4/filukk</code></td></tr>
+            <tr><td><code>npool=4</code> runtime</td><td>Slurm job <code>17627908</code>, completed in <code>00:04:16</code>; QE step wall time <code>4m04s</code>.</td></tr>
+            <tr><td>Wannier spread</td><td>Total spread <code>18.7555 Ang^2</code>, matching the single-pool smoke to printed precision.</td></tr>
+            <tr><td>Sternheimer consumer</td><td>Slurm job <code>17628026</code>, highmem, completed in <code>00:01:00</code>; MaxRSS <code>5.09 GB</code>.</td></tr>
+            <tr><td>Consumer diagnostics</td><td><code>max |U^dag U-I| = 8.593126e-14</code>; <code>max Bloch/Wannier norm diff = 1.114664e-13 Ry</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The local collected-WFC bridge keeps EDI's <code>readwfc(ipool, recn, evc)</code> interface, maps <code>(ipool, local k)</code> to the global k index, and reads QE 7 collected <code>wfc&lt;ik&gt;</code> files directly. This preserves the EDI pool-parallel AMN/MMN structure while remaining compatible with the current QE restart format.</p>
+    </section>
+
     <section>
       <h2>4-k Smoke Results</h2>
       <figure>
@@ -254,7 +279,12 @@ M^W(k_f,k_i) = U^\dagger(k_f) M^B(k_f,k_i) U(k_i)</pre>
 module load aocc/3.1.0 openmpi/4.1.6
 module load amdblis/3.0 amdlibflame/3.0 amdlibm/3.0 fftw
 make -C qe_sternheimer qe_kresolved_sternheimer_smoke.x
+make -C qe_sternheimer qe_edi_wannierize.x</pre>
 
+      <pre>sbatch qe_sternheimer/run_edi_wannierize_mos2_active_7_17_np4.sh
+sbatch qe_sternheimer/run_kresolved_standalone_np4_wannier_gauge_smoke.sh</pre>
+
+      <pre>
 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal.in
 
