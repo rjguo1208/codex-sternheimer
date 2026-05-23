@@ -170,7 +170,7 @@ M^W(k_f,k_i) = U^\dagger(k_f) M^B(k_f,k_i) U(k_i)</pre>
           </tbody>
         </table>
       </div>
-      <p>The Fortran executable has been updated with <code>use_wannier_gauge</code> and <code>filukk_file</code> namelist flags and writes Wannier-gauge matrix, pair-summary, unitarity, and metadata CSV files. A Slurm smoke run is queued to validate the same path inside the QE-linked executable.</p>
+      <p>The Fortran executable has been updated with <code>use_wannier_gauge</code> and <code>filukk_file</code> namelist flags and writes Wannier-gauge matrix, pair-summary, unitarity, and metadata CSV files. The QE-linked Slurm smoke completed in 46.4 s wall time with <code>max |U^\dagger U-I| = 5.728751e-13</code> and maximum Bloch/Wannier Frobenius norm difference <code>2.104983e-13 Ry</code>.</p>
     </section>
 
     <section>
