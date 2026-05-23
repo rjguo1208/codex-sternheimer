@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-23 15:37 EDT</span>
+        <span class="pill">Generated: 2026-05-23 17:45 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -52,6 +52,7 @@
         <span class="pill">full-order prototype validated</span>
         <span class="pill">Xi persistence validated</span>
         <span class="pill">Xi Wannier gauge validated</span>
+        <span class="pill">1D decay smoke</span>
         <span class="pill">EDI filukk gauge check</span>
         <span class="pill">standalone W90 npool=4</span>
       </div>
@@ -174,6 +175,33 @@ Xi_j(k_r;k_i) = sum_m Xi^W_m(k_r;k_i) U^*_{jm}(k_i)</pre>
         </table>
       </div>
       <p>The local validator can optionally write rotated <code>.npy</code> response vectors for later interpolation experiments. Those raw rotated files are not published to GitHub Pages; only this reduced diagnostic plot and summary are included.</p>
+    </section>
+
+    <section class="warning">
+      <h2>1D q=0 Perturbed-Wannier Decay Smoke</h2>
+      <p>A first real-space embedding test was run on a restricted q=0 line: <code>ik=1..12</code> with <code>rest ik = initial ik</code> and <code>final ik = initial ik</code>. This tests the saved-response to real-space perturbed-Wannier pipeline, but it is not yet the full defect double-k Wannier perturbation calculation.</p>
+      <pre>kx = 0
+ky = 0, 1/12, ..., 11/12
+supercell FFT grid = 40 x 480 x 300</pre>
+      <figure>
+        <img src="../assets/q0_line_perturbed_wannier_decay.png" alt="q=0 line perturbed-Wannier response decay smoke">
+        <figcaption>The line smoke does not show strong localization. The farthest minimum-image cell still carries about <code>0.488</code> of the center-cell integrated density, so this test is an inconclusive locality smoke rather than a final decay result.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Run directory</td><td><code>phase8_kresolved_sternheimer/q0_ky_line_second_order</code></td></tr>
+            <tr><td>Slurm job</td><td><code>17636384</code>, highmem, completed in <code>00:10:05</code></td></tr>
+            <tr><td>QE steps</td><td>12 completed, each about 48-52 s wall time; MaxRSS about 5.09 GB per step</td></tr>
+            <tr><td>Mode</td><td><code>second_order</code> saved response; full-order <code>Xi</code> line has not been run yet</td></tr>
+            <tr><td>max relative gauge roundtrip error</td><td><code>4.814320772978e-14</code></td></tr>
+            <tr><td>RMS distance</td><td><code>10.229626145 Ang</code></td></tr>
+            <tr><td>farthest/center integrated density</td><td><code>4.879795420651e-01</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The likely reason for the weak apparent decay is the restricted test geometry: one k-line and q=0 only. A meaningful defect-locality check needs either the full 2D q=0 mesh or a genuine double-k object <code>Xi(k_r;k_i)</code>, then the same real-space embedding/Fourier analysis.</p>
     </section>
 
     <section class="note">
@@ -327,6 +355,10 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
       <pre>module load anaconda/2024.02-py311
 conda activate Tmat
 python scripts/phase8_response_wannier_gauge.py --write-rotated</pre>
+      <pre>sbatch -p highmem qe_sternheimer/run_response_q0_ky_line_second_order.sh
+module load anaconda/2024.02-py311
+conda activate Tmat
+python scripts/phase8_response_decay_1d.py</pre>
       <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal_wannier_gauge.in</pre>
       <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
@@ -338,7 +370,8 @@ sbatch qe_sternheimer/run_kresolved_sternheimer_ik1_full_144_images.sh</pre>
 phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_pair_summary.csv
 phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_rhs.csv
 phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_matrix.csv
-phase8_kresolved_sternheimer/wannier_response_gauge_validation_nrest1_2/xi_wannier_gauge_validation_report.md</pre>
+phase8_kresolved_sternheimer/wannier_response_gauge_validation_nrest1_2/xi_wannier_gauge_validation_report.md
+phase8_kresolved_sternheimer/wannier_response_decay_q0_ky_line_second_order/q0_line_decay_report.md</pre>
       <p class="small">Published outputs are reduced CSV summaries, selected plots, and generated reports. Raw wavefunctions, cube grids, binary tensors, rotated <code>.npy</code> responses, and scheduler logs remain excluded.</p>
     </section>
 
