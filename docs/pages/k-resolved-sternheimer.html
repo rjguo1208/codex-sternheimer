@@ -51,6 +51,7 @@
         <span class="pill">full 12x12 production complete</span>
         <span class="pill">full-order prototype validated</span>
         <span class="pill">Xi persistence validated</span>
+        <span class="pill">EDI filukk gauge check</span>
       </div>
     </div>
   </header>
@@ -147,6 +148,31 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
       <p>The binary response directory is intentionally not published to GitHub Pages. Only the reduced figure and summary diagnostics are included here.</p>
     </section>
 
+    <section class="note">
+      <h2>EDI filukk Wannier Gauge</h2>
+      <p>The Sternheimer driver now has a first <code>filukk</code> consumer path using EDI's combined rotation <code>u_kc = u_mat_opt * u_mat</code>. This avoids reconstructing the disentanglement and Wannier rotations separately, which is the safest way to keep the phase convention aligned with EDI.</p>
+      <pre>|w_m(k)&gt; = sum_n |psi_n(k)&gt; U_nm(k)
+M^W(k_f,k_i) = U^\dagger(k_f) M^B(k_f,k_i) U(k_i)</pre>
+      <figure>
+        <img src="../assets/kresolved_wannier_gauge_filukk_sanity.png" alt="EDI filukk Wannier gauge sanity check">
+        <figcaption>Offline sanity check using the EDI 11-band <code>filukk</code> and an existing <code>ik=1, rest=1, final=1</code> Sternheimer matrix CSV. The kept bands are exactly 7-17, <code>max |U^\dagger U-I| = 5.73e-13</code>, and the Bloch/Wannier Frobenius norm difference for <code>Delta T^P_AA</code> is <code>2.19e-16 Ry</code>.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><code>filukk</code> source</td><td><code>edi-dev/test_edinterp/edi_run2/edi_11bands/filukk</code></td></tr>
+            <tr><td>Header</td><td><code>nbndep=11</code>, <code>nbndskip=6</code></td></tr>
+            <tr><td>Kept bands</td><td>7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17</td></tr>
+            <tr><td>Excluded-band lines inferred</td><td>17; this older <code>filukk</code> has no spread block, so the reader detects the logical section instead of assuming current QE <code>nbnd=150</code>.</td></tr>
+            <tr><td>max <code>|U^\dagger U-I|</code></td><td><code>5.728750807066e-13</code></td></tr>
+            <tr><td><code>||Delta T^P||_F</code> Bloch/Wannier diff</td><td><code>2.185751579731e-16 Ry</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The Fortran executable has been updated with <code>use_wannier_gauge</code> and <code>filukk_file</code> namelist flags and writes Wannier-gauge matrix, pair-summary, unitarity, and metadata CSV files. A Slurm smoke run is queued to validate the same path inside the QE-linked executable.</p>
+    </section>
+
     <section>
       <h2>4-k Smoke Results</h2>
       <figure>
@@ -241,6 +267,8 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse.in</pre>
       <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse_save_response.in</pre>
+      <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
+  -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal_wannier_gauge.in</pre>
       <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -ni 2 -nk 1 \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_4_final1_4_real_delta_vacuum_nonlocal_images.in
