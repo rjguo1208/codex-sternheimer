@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-23 00:36 EDT</span>
+        <span class="pill">Generated: 2026-05-23 15:37 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -51,6 +51,7 @@
         <span class="pill">full 12x12 production complete</span>
         <span class="pill">full-order prototype validated</span>
         <span class="pill">Xi persistence validated</span>
+        <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">EDI filukk gauge check</span>
         <span class="pill">standalone W90 npool=4</span>
       </div>
@@ -147,6 +148,32 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
         </table>
       </div>
       <p>The binary response directory is intentionally not published to GitHub Pages. Only the reduced figure and summary diagnostics are included here.</p>
+    </section>
+
+    <section class="note">
+      <h2>Xi Wannier-Gauge Closure</h2>
+      <p>The saved full-order response <code>Xi_j(k_r;k_i)</code> has now been rotated on the active source index using the standalone <code>npool=4</code> EDI-style <code>filukk</code>. This is the first concrete handoff toward Wannier-function perturbation: the Rest-space response remains represented on the QE plane-wave basis at each Rest k, while the active perturbation label is moved into the Wannier gauge.</p>
+      <pre>Xi^W_m(k_r;k_i) = sum_j Xi_j(k_r;k_i) U_jm(k_i)
+Xi_j(k_r;k_i) = sum_m Xi^W_m(k_r;k_i) U^*_{jm}(k_i)</pre>
+      <figure>
+        <img src="../assets/xi_wannier_gauge_validation.png" alt="Saved Xi response Wannier-gauge roundtrip validation">
+        <figcaption>Validation for <code>initial ik=1</code>, <code>rest ik=1..2</code>, active bands 7-17. The Frobenius norm is preserved by the rotation, and rotating back to the Bloch gauge reconstructs the saved <code>Xi</code> to numerical precision.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Input response directory</td><td><code>phase8_kresolved_sternheimer/responses/ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse</code></td></tr>
+            <tr><td><code>filukk</code> source</td><td><code>phase8_kresolved_sternheimer/standalone_wannier90_np4/filukk</code></td></tr>
+            <tr><td>Response groups</td><td>2 Rest k points, 22 saved <code>Xi</code> blocks</td></tr>
+            <tr><td>max Bloch/Wannier <code>Xi</code> Frobenius norm diff</td><td><code>1.776356839400e-14</code></td></tr>
+            <tr><td>max relative roundtrip reconstruction error</td><td><code>3.432697324117e-14</code></td></tr>
+            <tr><td>max elementwise roundtrip reconstruction error</td><td><code>8.469283149699e-15</code></td></tr>
+            <tr><td>max <code>|U^dag U-I|</code></td><td><code>5.107025913276e-14</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The local validator can optionally write rotated <code>.npy</code> response vectors for later interpolation experiments. Those raw rotated files are not published to GitHub Pages; only this reduced diagnostic plot and summary are included.</p>
     </section>
 
     <section class="note">
@@ -297,6 +324,9 @@ qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse.in</pre>
       <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse_save_response.in</pre>
+      <pre>module load anaconda/2024.02-py311
+conda activate Tmat
+python scripts/phase8_response_wannier_gauge.py --write-rotated</pre>
       <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal_wannier_gauge.in</pre>
       <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
@@ -307,8 +337,9 @@ sbatch qe_sternheimer/run_kresolved_sternheimer_ik1_full_144_images.sh</pre>
       <pre>phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_report.md
 phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_pair_summary.csv
 phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_rhs.csv
-phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_matrix.csv</pre>
-      <p class="small">Published outputs are reduced CSV summaries, one plot, and the generated report. Raw wavefunctions, cube grids, binary tensors, and scheduler logs remain excluded.</p>
+phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_matrix.csv
+phase8_kresolved_sternheimer/wannier_response_gauge_validation_nrest1_2/xi_wannier_gauge_validation_report.md</pre>
+      <p class="small">Published outputs are reduced CSV summaries, selected plots, and generated reports. Raw wavefunctions, cube grids, binary tensors, rotated <code>.npy</code> responses, and scheduler logs remain excluded.</p>
     </section>
 
     <section class="warning">
