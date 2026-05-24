@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-23 19:55 EDT</span>
+        <span class="pill">Generated: 2026-05-23 20:45 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -54,6 +54,7 @@
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
+        <span class="pill">1D double-k decay line</span>
         <span class="pill">EDI filukk gauge check</span>
         <span class="pill">standalone W90 npool=4</span>
       </div>
@@ -231,6 +232,35 @@ supercell FFT grid = 40 x 480 x 300</pre>
       <p>The residual long-range tail is expected for this periodic q=0 test. The next locality test should use a genuinely double-k saved-response block <code>Xi(k_r;k_i)</code> before drawing conclusions about localized defect Wannier perturbation.</p>
     </section>
 
+    <section class="warning">
+      <h2>1D Double-k Decay Line</h2>
+      <p>A first genuinely double-k line test has now been run on the same <code>kx=0</code>, <code>ky=0..11/12</code> line. It saves the full object <code>Xi_j(k_r;k_i)</code> for 12 source k points, 12 Rest k points, and 11 active source indices, then rotates the source active index with the same standalone EDI/Wannier90 <code>filukk</code>.</p>
+      <pre>Xi^W_m(G;k_r,k_i) = sum_j Xi_j(G;k_r,k_i) U_jm(k_i)
+Xi^W_m(r;R_i=0) = 1/(N_i N_r) sum_{k_i,k_r,G} Xi^W_m(G;k_r,k_i) exp[i(G+k_r).r]</pre>
+      <figure>
+        <img src="../assets/doublek_line_perturbed_wannier_decay.png" alt="1D double-k perturbed-Wannier response decay line">
+        <figcaption>The 1D double-k line includes nonzero momentum transfer along the line, but it still does not establish localization: the farthest/center integrated density is <code>0.523</code>, slightly larger than the q=0 line value <code>0.488</code>. The source-index gauge roundtrip remains at numerical precision, so the likely limitation is the restricted one-dimensional k geometry.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Response run</td><td>Slurm job <code>17637918</code>, highmem, completed in <code>00:25:47</code></td></tr>
+            <tr><td>Saved responses</td><td>12 metadata files, each <code>133</code> lines; <code>1584</code> <code>Xi</code> blocks and <code>1584</code> RHS blocks</td></tr>
+            <tr><td>Raw response directory</td><td>about <code>1.6 GB</code>, not published</td></tr>
+            <tr><td>Postprocess run</td><td>Slurm job <code>17638102</code>, highmem, completed in <code>00:00:45</code>; MaxRSS <code>876 MB</code></td></tr>
+            <tr><td>supercell FFT grid</td><td><code>40 x 480 x 300</code></td></tr>
+            <tr><td>center cell</td><td><code>9</code></td></tr>
+            <tr><td>max relative gauge roundtrip error</td><td><code>5.512278797475e-14</code></td></tr>
+            <tr><td>nearest/center integrated density</td><td><code>9.486144669219e-01</code></td></tr>
+            <tr><td>farthest/center integrated density</td><td><code>5.233160292469e-01</code></td></tr>
+            <tr><td>RMS distance</td><td><code>10.477186676 Ang</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This is the first nonzero-q saved-response locality diagnostic, but it is still only a one-dimensional second-order slice. The next physically meaningful test is the full <code>12 x 12</code> source-k by <code>12 x 12</code> Rest-k double-k transform, with storage and I/O planned carefully.</p>
+    </section>
+
     <section class="note">
       <h2>EDI filukk Wannier Gauge</h2>
       <p>The Sternheimer driver now has a first <code>filukk</code> consumer path using EDI's combined rotation <code>u_kc = u_mat_opt * u_mat</code>. This avoids reconstructing the disentanglement and Wannier rotations separately, which is the safest way to keep the phase convention aligned with EDI.</p>
@@ -388,6 +418,8 @@ conda activate Tmat
 python scripts/phase8_response_decay_1d.py</pre>
       <pre>sbatch qe_sternheimer/run_response_q0_full2d_second_order_parallel.sh
 sbatch qe_sternheimer/run_response_q0_full2d_decay_postprocess.sh</pre>
+      <pre>sbatch qe_sternheimer/run_response_doublek_ky_line_second_order_parallel.sh
+sbatch qe_sternheimer/run_response_doublek_ky_line_decay_postprocess.sh</pre>
       <pre>qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
   -i qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_1_final1_1_real_delta_vacuum_nonlocal_wannier_gauge.in</pre>
       <pre>mpirun -np 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x \
@@ -401,7 +433,8 @@ phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal
 phase8_kresolved_sternheimer/ik1_rest1_144_final1_144_real_delta_vacuum_nonlocal_second_order_images_matrix.csv
 phase8_kresolved_sternheimer/wannier_response_gauge_validation_nrest1_2/xi_wannier_gauge_validation_report.md
 phase8_kresolved_sternheimer/wannier_response_decay_q0_ky_line_second_order/q0_line_decay_report.md
-phase8_kresolved_sternheimer/wannier_response_decay_q0_full2d_second_order/q0_2d_decay_report.md</pre>
+phase8_kresolved_sternheimer/wannier_response_decay_q0_full2d_second_order/q0_2d_decay_report.md
+phase8_kresolved_sternheimer/wannier_response_decay_doublek_ky_line_second_order/doublek_line_decay_report.md</pre>
       <p class="small">Published outputs are reduced CSV summaries, selected plots, and generated reports. Raw wavefunctions, cube grids, binary tensors, rotated <code>.npy</code> responses, and scheduler logs remain excluded.</p>
     </section>
 
