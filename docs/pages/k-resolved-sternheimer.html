@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-23 20:45 EDT</span>
+        <span class="pill">Generated: 2026-05-24 21:10 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -51,6 +51,7 @@
         <span class="pill">full 12x12 production complete</span>
         <span class="pill">full-order prototype validated</span>
         <span class="pill">Xi persistence validated</span>
+        <span class="pill">source-centric chi shards validated</span>
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
@@ -151,6 +152,35 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
         </table>
       </div>
       <p>The binary response directory is intentionally not published to GitHub Pages. Only the reduced figure and summary diagnostics are included here.</p>
+    </section>
+
+    <section class="note">
+      <h2>Source-Centric Full-Order Chi Shards</h2>
+      <p>The full-order response writer now saves one packed shard per source label <code>b=(j,k_i)</code>. Each shard contains all selected Rest sectors <code>Xi_j(k_r;k_i)</code> for that source, so the saved object matches the abstract Sternheimer response <code>|chi_{j k_i}&gt;</code> rather than treating <code>k_r</code> as an independent final momentum.</p>
+      <pre>(z - H0,R - g_RR) |chi_{j k_i}&gt; = Q_R g |psi_{j k_i}&gt;
+|chi_{j k_i}&gt; = sum_{k_r} |Xi_j(k_r;k_i)&gt;</pre>
+      <figure>
+        <img src="../assets/source_response_full_order_fastio_validation.png" alt="Source-centric full-order Sternheimer shard validation">
+        <figcaption>Fast I/O validation for <code>initial ik=1</code>, <code>rest ik=1..2</code>, <code>final ik=1..2</code>, and active bands 7-17. The run intentionally used <code>maxiter=2</code>, so it validates the source-shard write/read path and contraction identity, not physical convergence.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Input</td><td><code>qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse_source_response_fastio.in</code></td></tr>
+            <tr><td>Slurm job</td><td><code>17657697</code>, highmem, completed in <code>00:03:03</code></td></tr>
+            <tr><td>Saved <code>chi</code> shards</td><td>11</td></tr>
+            <tr><td>Saved RHS shards</td><td>11</td></tr>
+            <tr><td>Source metadata rows</td><td>11 data rows</td></tr>
+            <tr><td>Sector metadata rows</td><td>22 data rows</td></tr>
+            <tr><td>Response directory size</td><td>24 MB</td></tr>
+            <tr><td>max <code>P_A chi</code> leakage</td><td><code>2.97957359e-16</code></td></tr>
+            <tr><td>reload diff, final ik=1</td><td><code>0.0 Ry</code></td></tr>
+            <tr><td>reload diff, final ik=2</td><td><code>0.0 Ry</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The previous sector-file writer remains available for second-order diagnostics. For full-order production, the source-centric shard is the preferred handoff to Wannier-function perturbation because one file corresponds to one source response <code>|chi_{j k_i}&gt;</code>.</p>
     </section>
 
     <section class="note">
