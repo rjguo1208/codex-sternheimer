@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-24 21:10 EDT</span>
+        <span class="pill">Generated: 2026-05-24 21:16 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -169,11 +169,28 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
           <tbody>
             <tr><td>Input</td><td><code>qe_sternheimer/qe_kresolved_sternheimer_ik1_rest1_2_final1_2_real_delta_vacuum_nonlocal_coupled_full_inverse_source_response_fastio.in</code></td></tr>
             <tr><td>Slurm job</td><td><code>17657697</code>, highmem, completed in <code>00:03:03</code></td></tr>
+            <tr><td>Node</td><td><code>b001</code></td></tr>
+            <tr><td>Slurm allocated CPUs</td><td>128 CPUs from highmem exclusive allocation</td></tr>
+            <tr><td>QE MPI ranks used</td><td>1 MPI process on 1 node</td></tr>
+            <tr><td>Available node memory at QE startup</td><td><code>1010953 MiB</code></td></tr>
+            <tr><td>MaxRSS for QE step</td><td><code>6568688 KB</code> (~6.26 GiB)</td></tr>
+            <tr><td>QE reported time</td><td><code>2m49.70s CPU</code>, <code>2m56.63s WALL</code></td></tr>
+            <tr><td>Mode</td><td><code>coupled_full_inverse</code>, source-centric shard writer, <code>maxiter=2</code></td></tr>
+            <tr><td>Source initial k</td><td><code>initial_ik=1</code></td></tr>
+            <tr><td>Rest sectors</td><td><code>rest_ik=1..2</code>; <code>ngk=24205</code> and <code>24163</code></td></tr>
+            <tr><td>Final k points</td><td><code>final_ik=1..2</code></td></tr>
+            <tr><td>Active bands</td><td>bands <code>7..17</code>, 11 active states</td></tr>
+            <tr><td>Source chi objects solved</td><td>11, one per active source band at <code>initial_ik=1</code></td></tr>
+            <tr><td>Rest response sectors represented</td><td>22 total <code>Xi_j(k_r;k_i)</code> sectors = 11 sources x 2 Rest k sectors</td></tr>
+            <tr><td>Active output matrix elements</td><td>242 complex elements = 2 final k points x 11 x 11 active matrix entries</td></tr>
             <tr><td>Saved <code>chi</code> shards</td><td>11</td></tr>
             <tr><td>Saved RHS shards</td><td>11</td></tr>
             <tr><td>Source metadata rows</td><td>11 data rows</td></tr>
             <tr><td>Sector metadata rows</td><td>22 data rows</td></tr>
             <tr><td>Response directory size</td><td>24 MB</td></tr>
+            <tr><td>max RHS block norm</td><td><code>2.233891998113 Ry</code></td></tr>
+            <tr><td>max relative residual</td><td><code>7.993127858043e-01</code>; intentionally not converged because this was a fast I/O test</td></tr>
+            <tr><td>GMRES iterations</td><td>2 for every source</td></tr>
             <tr><td>max <code>P_A chi</code> leakage</td><td><code>2.97957359e-16</code></td></tr>
             <tr><td>reload diff, final ik=1</td><td><code>0.0 Ry</code></td></tr>
             <tr><td>reload diff, final ik=2</td><td><code>0.0 Ry</code></td></tr>
