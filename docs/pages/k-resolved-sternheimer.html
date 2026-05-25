@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-24 21:16 EDT</span>
+        <span class="pill">Generated: 2026-05-25 00:20 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -52,6 +52,7 @@
         <span class="pill">full-order prototype validated</span>
         <span class="pill">Xi persistence validated</span>
         <span class="pill">source-centric chi shards validated</span>
+        <span class="pill">full-order source MPI validated</span>
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
@@ -198,6 +199,34 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
         </table>
       </div>
       <p>The previous sector-file writer remains available for second-order diagnostics. For full-order production, the source-centric shard is the preferred handoff to Wannier-function perturbation because one file corresponds to one source response <code>|chi_{j k_i}&gt;</code>.</p>
+    </section>
+
+    <section class="note">
+      <h2>Full-Order Source MPI Validation</h2>
+      <p>The <code>coupled_full_inverse</code> path now supports MPI image parallelism over active source labels. Each image solves a disjoint subset of <code>j</code> in <code>|chi_{j k_i}&gt;</code>, then the active-space <code>Delta T^P_AA</code>, residual tables, and reload checks are reduced over images. The Rest-sector block GMRES for each source is unchanged.</p>
+      <pre>srun -n 2 qe_sternheimer/qe_kresolved_sternheimer_smoke.x -ni 2 -nk 1 -i ...source_response_converged_np2.in</pre>
+      <figure>
+        <img src="../assets/full_order_source_parallel_np2_validation.png" alt="Full-order Sternheimer source-parallel MPI validation">
+        <figcaption>MPI image validation for <code>initial ik=1</code>, <code>rest ik=1..2</code>, <code>final ik=1..2</code>, active bands 7-17. The two-image converged run matches the single-image source-shard result to roundoff.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>1 image converged</th><th>2 images converged</th></tr></thead>
+          <tbody>
+            <tr><td>Slurm job</td><td><code>17657790</code></td><td><code>17658518</code></td></tr>
+            <tr><td>QE MPI ranks / images</td><td>1 / 1</td><td>2 / 2</td></tr>
+            <tr><td>Wall time</td><td><code>36m51.64s</code></td><td><code>23m48.23s</code></td></tr>
+            <tr><td>Slurm elapsed</td><td><code>00:36:57</code></td><td><code>00:23:53</code></td></tr>
+            <tr><td>MaxRSS per QE step</td><td><code>6572024 KB</code></td><td><code>6577084 KB</code></td></tr>
+            <tr><td>Source distribution</td><td>11 source solves on image 0</td><td>6 source solves on image 0, 5 on image 1</td></tr>
+            <tr><td>max GMRES iterations</td><td>51</td><td>51</td></tr>
+            <tr><td>max relative residual</td><td><code>7.563371e-11</code></td><td><code>7.563366e-11</code></td></tr>
+            <tr><td>max reload <code>DeltaT</code> diff</td><td><code>0.0 Ry</code></td><td><code>0.0 Ry</code></td></tr>
+            <tr><td>max matrix diff vs 1-image result</td><td>reference</td><td><code>2.22e-16 Ry</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>For the corresponding fast-I/O smoke, the 2-image result also matched the 1-image result to <code>2.22e-16 Ry</code>. The current MPI implementation parallelizes source labels; it does not yet distribute the internal <code>g_RR</code> Rest-sector matvec for one source.</p>
     </section>
 
     <section class="note">
