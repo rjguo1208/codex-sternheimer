@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-25 02:50 EDT</span>
+        <span class="pill">Generated: 2026-05-25 14:25 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -58,6 +58,7 @@
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
         <span class="pill">1D double-k decay line</span>
+        <span class="pill">full 2D double-k decay map</span>
         <span class="pill">EDI filukk gauge check</span>
         <span class="pill">standalone W90 npool=4</span>
       </div>
@@ -366,6 +367,38 @@ Xi^W_m(r;R_i=0) = 1/(N_i N_r) sum_{k_i,k_r,G} Xi^W_m(G;k_r,k_i) exp[i(G+k_r).r]<
         </table>
       </div>
       <p>This is the first nonzero-q saved-response locality diagnostic, but it is still only a one-dimensional second-order slice. The next physically meaningful test is the full <code>12 x 12</code> source-k by <code>12 x 12</code> Rest-k double-k transform, with storage and I/O planned carefully.</p>
+    </section>
+
+    <section class="note">
+      <h2>Full 2D Double-k Decay Map</h2>
+      <p>The full second-order double-k response set has now been transformed: <code>144</code> source k points by <code>144</code> Rest k points, with <code>11</code> active source indices. The postprocessor streams over target Rest k, rotates the active source index with the standalone EDI/Wannier90 <code>filukk</code>, sums over source k to place the active Wannier perturbation at <code>R_i=0</code>, and embeds the result in a <code>12 x 12 x 1</code> supercell.</p>
+      <pre>Xi^W_m(r;R_i=0) = 1/(N_i N_r) sum_{k_i,k_r,G} Xi^W_m(G;k_r,k_i) exp[i(G+k_r).r]
+source k grid = 12 x 12
+target Rest k grid = 12 x 12
+supercell FFT grid = 480 x 480 x 300</pre>
+      <figure>
+        <img src="../assets/doublek_2d_perturbed_wannier_decay.png" alt="Full 2D double-k perturbed-Wannier response decay map">
+        <figcaption>The full 2D double-k transform is more localized than the 1D double-k line: the farthest/center integrated density is <code>0.161</code>, compared with <code>0.523</code> for the line test. This remains a second-order Rest-space response; the same transform should be repeated for full-order Rest responses once that production path is optimized.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Response run</td><td>Slurm job <code>17638670</code>, highmem, completed in <code>1-10:08:01</code></td></tr>
+            <tr><td>Saved responses</td><td><code>144</code> metadata files, <code>228096</code> <code>Xi</code> blocks; raw scratch directory about <code>112 GB</code>, not published</td></tr>
+            <tr><td>RHS convergence</td><td><code>228096</code> rows, no unconverged rows; max relative residual <code>9.99994994e-11</code>; max iterations <code>42</code></td></tr>
+            <tr><td>Postprocess run</td><td>Slurm job <code>17666645</code>, completed in <code>00:09:29</code>; MaxRSS <code>4475244 KB</code></td></tr>
+            <tr><td>pair count</td><td><code>20736</code></td></tr>
+            <tr><td>center cell</td><td><code>(9, 9)</code></td></tr>
+            <tr><td>max relative gauge roundtrip error</td><td><code>6.231670052344e-14</code></td></tr>
+            <tr><td>nearest/center integrated density</td><td><code>7.004593540564e-01</code></td></tr>
+            <tr><td>farthest/center integrated density</td><td><code>1.612513865182e-01</code></td></tr>
+            <tr><td>RMS distance</td><td><code>13.376779213 Ang</code></td></tr>
+            <tr><td>mean / max pair response norm</td><td><code>2.838263769171</code> / <code>3.938865907125</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This is the first complete 2D double-k locality diagnostic for the saved second-order Rest response. It supports using a 2D double-k transform for the Wannier perturbation workflow, while keeping the full-order production question separate.</p>
     </section>
 
     <section class="note">
