@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-25 00:20 EDT</span>
+        <span class="pill">Generated: 2026-05-25 02:50 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -53,6 +53,7 @@
         <span class="pill">Xi persistence validated</span>
         <span class="pill">source-centric chi shards validated</span>
         <span class="pill">full-order source MPI validated</span>
+        <span class="pill">nrest=4 scaling tested</span>
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
@@ -227,6 +228,36 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
         </table>
       </div>
       <p>For the corresponding fast-I/O smoke, the 2-image result also matched the 1-image result to <code>2.22e-16 Ry</code>. The current MPI implementation parallelizes source labels; it does not yet distribute the internal <code>g_RR</code> Rest-sector matvec for one source.</p>
+    </section>
+
+    <section class="note">
+      <h2>Full-Order Rest Scaling</h2>
+      <p>A larger source-centric full-order test was run with <code>rest ik=1..4</code> and <code>final ik=1..4</code>. This keeps the same active source set and real <code>DeltaV</code>, but doubles the coupled Rest-sector count relative to the validated <code>nrest=2</code> case.</p>
+      <pre>srun -n 4 qe_sternheimer/qe_kresolved_sternheimer_smoke.x -ni 4 -nk 1 -i ...source_response_converged_np4.in</pre>
+      <figure>
+        <img src="../assets/full_order_source_scaling_nrest2_4.png" alt="Full-order source-centric Sternheimer nrest scaling">
+        <figcaption>Scaling summary for source-centric full-order Rest scattering. The <code>nrest=4</code> run converged and passed reload validation, but the per-source coupled solve is substantially heavier than <code>nrest=2</code>.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>nrest=2, 1 image</th><th>nrest=2, 2 images</th><th>nrest=4, 4 images</th></tr></thead>
+          <tbody>
+            <tr><td>Slurm job</td><td><code>17657790</code></td><td><code>17658518</code></td><td><code>17658972</code></td></tr>
+            <tr><td>Rest / final k range</td><td><code>1..2 / 1..2</code></td><td><code>1..2 / 1..2</code></td><td><code>1..4 / 1..4</code></td></tr>
+            <tr><td>MPI ranks / images</td><td>1 / 1</td><td>2 / 2</td><td>4 / 4</td></tr>
+            <tr><td>QE wall time</td><td><code>36m51.64s</code></td><td><code>23m48.23s</code></td><td><code>1h 8m</code></td></tr>
+            <tr><td>Slurm elapsed</td><td><code>00:36:57</code></td><td><code>00:23:53</code></td><td><code>01:08:15</code></td></tr>
+            <tr><td>MaxRSS per QE step</td><td><code>6572024 KB</code></td><td><code>6577084 KB</code></td><td><code>9520864 KB</code></td></tr>
+            <tr><td>Source distribution</td><td><code>11</code></td><td><code>6+5</code></td><td><code>3+3+3+2</code></td></tr>
+            <tr><td>Source / sector rows</td><td><code>11 / 22</code></td><td><code>11 / 22</code></td><td><code>11 / 44</code></td></tr>
+            <tr><td>max GMRES iterations</td><td>51</td><td>51</td><td>75</td></tr>
+            <tr><td>max relative residual</td><td><code>7.563371e-11</code></td><td><code>7.563366e-11</code></td><td><code>9.947015e-11</code></td></tr>
+            <tr><td>max reload <code>DeltaT</code> diff</td><td><code>0.0 Ry</code></td><td><code>0.0 Ry</code></td><td><code>0.0 Ry</code></td></tr>
+            <tr><td>max <code>||delta_T^P||_F</code></td><td><code>4.542677e-02 Ry</code></td><td><code>4.542677e-02 Ry</code></td><td><code>9.745037e-02 Ry</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The result supports the source-centric MPI route, but it also confirms that the next bottleneck is the internal <code>g_RR</code> Rest-sector matvec. Full <code>nrest=144</code> production should not be attempted before caching or distributing that matvec.</p>
     </section>
 
     <section class="note">
