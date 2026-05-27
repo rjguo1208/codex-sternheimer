@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-25 14:25 EDT</span>
+        <span class="pill">Generated: 2026-05-27 16:10 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -54,6 +54,7 @@
         <span class="pill">source-centric chi shards validated</span>
         <span class="pill">full-order source MPI validated</span>
         <span class="pill">nrest=4 scaling tested</span>
+        <span class="pill">2nd vs full Rest compared</span>
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
@@ -259,6 +260,32 @@ T^P_AA = g_AA + Delta T^P_AA</pre>
         </table>
       </div>
       <p>The result supports the source-centric MPI route, but it also confirms that the next bottleneck is the internal <code>g_RR</code> Rest-sector matvec. Full <code>nrest=144</code> production should not be attempted before caching or distributing that matvec.</p>
+    </section>
+
+    <section class="note">
+      <h2>Second vs Full Rest</h2>
+      <p>Because full-order Rest scattering is too expensive at the full <code>12 x 12</code> Rest grid, the immediate hybrid strategy is to keep Rest-space scattering at second order and reserve full resummation for the active space. A small-subspace check compares the second-order Rest correction with the source-centric full-order Rest correction for <code>initial ik=1</code>, active bands 7-17, and <code>nrest=1,2,4</code>.</p>
+      <pre>Delta T^P_2    = g_AR G_R g_RA
+Delta T^P_full = g_AR G_R [1 - g_RR G_R]^-1 g_RA</pre>
+      <figure>
+        <img src="../assets/second_vs_full_order_rest_comparison.png" alt="Second-order versus full-order Rest contribution comparison">
+        <figcaption>For the tested small Rest subspaces, the second-order Rest correction differs from the full-order Rest correction by about 1-6% relative to the Rest correction itself. The impact on the total partial matrix <code>T^P_AA = g_AA + Delta T^P_AA</code> is below <code>1.4e-3</code> in Frobenius relative norm.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Case</th><th>final ik</th><th><code>||Delta_2||_F</code></th><th><code>||Delta_full||_F</code></th><th>Rest relative diff</th><th>Total <code>T^P</code> relative diff</th></tr></thead>
+          <tbody>
+            <tr><td><code>nrest=1</code></td><td>1</td><td><code>9.220184e-03</code></td><td><code>9.139887e-03</code></td><td><code>9.38e-03</code></td><td><code>2.84e-05</code></td></tr>
+            <tr><td><code>nrest=2</code></td><td>1</td><td><code>4.625083e-02</code></td><td><code>4.542677e-02</code></td><td><code>1.92e-02</code></td><td><code>2.92e-04</code></td></tr>
+            <tr><td><code>nrest=2</code></td><td>2</td><td><code>3.337466e-02</code></td><td><code>3.248371e-02</code></td><td><code>2.84e-02</code></td><td><code>2.10e-04</code></td></tr>
+            <tr><td><code>nrest=4</code></td><td>1</td><td><code>1.013834e-01</code></td><td><code>9.745037e-02</code></td><td><code>4.18e-02</code></td><td><code>1.39e-03</code></td></tr>
+            <tr><td><code>nrest=4</code></td><td>2</td><td><code>7.158745e-02</code></td><td><code>6.766904e-02</code></td><td><code>5.96e-02</code></td><td><code>9.27e-04</code></td></tr>
+            <tr><td><code>nrest=4</code></td><td>3</td><td><code>8.835904e-02</code></td><td><code>8.513340e-02</code></td><td><code>3.98e-02</code></td><td><code>1.28e-03</code></td></tr>
+            <tr><td><code>nrest=4</code></td><td>4</td><td><code>6.519892e-02</code></td><td><code>6.180270e-02</code></td><td><code>5.67e-02</code></td><td><code>9.14e-04</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This supports the proposed hybrid approximation for the tested subset, with a clear caveat: the comparison is only for <code>initial ik=1</code> and <code>nrest<=4</code>. It is evidence that Rest-Rest multiple scattering is a small correction here, not yet a proof for all source k points or the full <code>nrest=144</code> space.</p>
     </section>
 
     <section class="note">
