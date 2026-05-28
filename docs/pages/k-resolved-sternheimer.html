@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-27 16:10 EDT</span>
+        <span class="pill">Generated: 2026-05-28 13:42 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -55,6 +55,7 @@
         <span class="pill">full-order source MPI validated</span>
         <span class="pill">nrest=4 scaling tested</span>
         <span class="pill">2nd vs full Rest compared</span>
+        <span class="pill">Gaussian 2nd vs full compared</span>
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
@@ -286,6 +287,27 @@ Delta T^P_full = g_AR G_R [1 - g_RR G_R]^-1 g_RA</pre>
         </table>
       </div>
       <p>This supports the proposed hybrid approximation for the tested subset, with a clear caveat: the comparison is only for <code>initial ik=1</code> and <code>nrest<=4</code>. It is evidence that Rest-Rest multiple scattering is a small correction here, not yet a proof for all source k points or the full <code>nrest=144</code> space.</p>
+    </section>
+
+    <section class="note">
+      <h2>Gaussian Second vs Full</h2>
+      <p>The Gaussian model-potential test was rerun using the same QE-Hamiltonian Sternheimer binary and the same wavefunctions for the second-order and full-order Rest-space paths. This avoids the phase/version mismatch that was visible in the older <code>V0=1 Ry</code> files.</p>
+      <pre>second order: Delta T^P_2 = g_AR G_R g_RA
+full order:   Delta T^P_full = g_AR G_R [1 - g_RR G_R]^-1 g_RA</pre>
+      <figure>
+        <img src="../assets/gaussian_second_vs_full_order_comparison.png" alt="Gaussian model potential second-order versus full-order Sternheimer comparison">
+        <figcaption>QE-Hamiltonian Sternheimer comparison for <code>ik=1</code>, active bands 7-17, Gaussian width <code>sigma=1 bohr</code>, and zero-average local model potential. The full-order Rest correction is very close to the second-order result for both amplitudes tested.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Case</th><th><code>||Delta_2||_F</code> (Ry)</th><th><code>||Delta_full||_F</code> (Ry)</th><th>Rest relative diff</th><th>Total <code>T^P</code> relative diff</th></tr></thead>
+          <tbody>
+            <tr><td><code>V0=0.01 Ry</code></td><td><code>4.76575179e-08</code></td><td><code>4.76569790e-08</code></td><td><code>1.15666e-05</code></td><td><code>9.46731e-11</code></td></tr>
+            <tr><td><code>V0=1 Ry</code></td><td><code>4.76575179e-04</code></td><td><code>4.76036937e-04</code></td><td><code>1.15648e-03</code></td><td><code>9.46273e-07</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>For this local Gaussian potential and single-k QE-Hamiltonian test, Rest-Rest multiple scattering changes the Rest correction by about <code>1.2e-5</code> at <code>V0=0.01 Ry</code> and about <code>1.2e-3</code> at <code>V0=1 Ry</code>. The corresponding change in the total partially scattered matrix remains below <code>1e-6</code> for the strong test.</p>
     </section>
 
     <section class="note">
