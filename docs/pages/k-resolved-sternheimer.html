@@ -43,7 +43,7 @@
       <h1>K-resolved QE-Hamiltonian Sternheimer Smoke</h1>
       <p>Selected-initial-k real-DeltaV Rest-space partial scattering test using the true QE Hamiltonian action.</p>
       <div class="meta">
-        <span class="pill">Generated: 2026-05-28 13:42 EDT</span>
+        <span class="pill">Generated: 2026-05-28 13:49 EDT</span>
         <span class="pill">initial ik = 1</span>
         <span class="pill">rest ik = 1..4</span>
         <span class="pill">final ik = 1..4</span>
@@ -56,6 +56,7 @@
         <span class="pill">nrest=4 scaling tested</span>
         <span class="pill">2nd vs full Rest compared</span>
         <span class="pill">Gaussian 2nd vs full compared</span>
+        <span class="pill">Explicit Gaussian finite-band compared</span>
         <span class="pill">Xi Wannier gauge validated</span>
         <span class="pill">1D decay smoke</span>
         <span class="pill">2D q=0 decay map</span>
@@ -308,6 +309,27 @@ full order:   Delta T^P_full = g_AR G_R [1 - g_RR G_R]^-1 g_RA</pre>
         </table>
       </div>
       <p>For this local Gaussian potential and single-k QE-Hamiltonian test, Rest-Rest multiple scattering changes the Rest correction by about <code>1.2e-5</code> at <code>V0=0.01 Ry</code> and about <code>1.2e-3</code> at <code>V0=1 Ry</code>. The corresponding change in the total partially scattered matrix remains below <code>1e-6</code> for the strong test.</p>
+    </section>
+
+    <section class="note">
+      <h2>Explicit Gaussian Finite-Band</h2>
+      <p>A separate shared-node job repeated the Gaussian comparison using explicit finite-band matrix elements rather than Sternheimer. The Rest subspace was the single-k finite basis <code>bands 1-6,18-150</code>, so the inverted Rest matrix dimension was <code>139 x 139</code>.</p>
+      <pre>Delta T^P_2    = sum_r w_r g_Ar g_rA / (omega0 + i eta - eps_r)
+Delta T^P_full = g_AR sqrt(w) [D_R - sqrt(w) g_RR sqrt(w)]^-1 sqrt(w) g_RA</pre>
+      <figure>
+        <img src="../assets/explicit_gaussian_second_vs_full_order_comparison.png" alt="Explicit finite-band Gaussian second-order versus full-order comparison">
+        <figcaption>Explicit finite-band comparison for <code>ik=1</code>, active bands 7-17, Rest bands 1-6 and 18-150. The full-order correction remains very close to the second-order correction, consistent with the QE-Hamiltonian Sternheimer result.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Case</th><th><code>n_R</code></th><th><code>||Delta_2||_F</code> (Ry)</th><th><code>||Delta_full||_F</code> (Ry)</th><th>Rest relative diff</th><th>Total <code>T^P</code> relative diff</th></tr></thead>
+          <tbody>
+            <tr><td><code>V0=0.01 Ry</code></td><td>139</td><td><code>4.34578147e-08</code></td><td><code>4.34573945e-08</code></td><td><code>1.00177e-05</code></td><td><code>7.47695e-11</code></td></tr>
+            <tr><td><code>V0=1 Ry</code></td><td>139</td><td><code>4.34578147e-04</code></td><td><code>4.34158491e-04</code></td><td><code>1.00162e-03</code></td><td><code>7.47401e-07</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The explicit finite-band values are slightly smaller than the Sternheimer values because the explicit basis is truncated at band 150, while the Sternheimer solve acts in the plane-wave complement of the active subspace. The relative second-vs-full difference is nevertheless almost the same: roughly <code>1e-5</code> for <code>V0=0.01 Ry</code> and <code>1e-3</code> for <code>V0=1 Ry</code>.</p>
     </section>
 
     <section class="note">
